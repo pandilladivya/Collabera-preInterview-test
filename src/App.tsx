@@ -1,54 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 
-interface State {
+enum BtnColor {
+  Red = "red",
+  Blue = "blue",
+  Green = "green",
+}
+interface StateProps {
   lastClicked?: Date;
-  buttonColor: "red" | "blue" | "green";
+  buttonColor: BtnColor;
 }
 
-class App extends React.Component<object, State> {
-  constructor(props: object) {
-    super(props);
-    this.state = {
-      lastClicked: undefined,
-      buttonColor: "red",
-    };
-  }
+const App: React.FC = () => {
+  const [state, setState] = useState<StateProps>({
+    lastClicked: undefined,
+    buttonColor: BtnColor.Red,
+  });
 
-  public render() {
-    const { lastClicked, buttonColor } = this.state;
+  const { lastClicked, buttonColor } = state;
 
-    return (
-      <div>
-        <button onClick={this.onClick} style={{ backgroundColor: buttonColor }}>
-          Click
-        </button>
-        <p>
-          Last clicked:{" "}
-          {lastClicked !== undefined ? lastClicked.toString() : "Never"}
-        </p>
-      </div>
-    );
-  }
-
-  private onClick = () => {
-    this.setState({
+  const onClick = () => {
+    setState((prevState) => ({
       lastClicked: new Date(),
-      buttonColor: this.getNextButtonColor(),
-    });
+      buttonColor: getNextButtonColor(prevState.buttonColor),
+    }));
   };
 
-  private getNextButtonColor = (): "red" | "blue" | "green" => {
-    switch (this.state.buttonColor) {
-      case "red":
-        return "blue";
-      case "blue":
-        return "green";
-      case "green":
-        return "red";
+  const getNextButtonColor = (currentColor: BtnColor): BtnColor => {
+    switch (currentColor) {
+      case BtnColor.Red:
+        return BtnColor.Blue;
+      case BtnColor.Blue:
+        return BtnColor.Green;
+      case BtnColor.Green:
+        return BtnColor.Red;
       default:
         throw new Error("Invalid color");
     }
   };
-}
+
+  return (
+    <div>
+      <button onClick={onClick} style={{ backgroundColor: buttonColor }}>
+        Click
+      </button>
+      <p>
+        Last clicked:&nbsp;
+        {!!lastClicked ? lastClicked.toString() : "Never"}
+      </p>
+    </div>
+  );
+};
 
 export default App;
